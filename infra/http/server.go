@@ -1,13 +1,16 @@
 package http
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/rellyson/car-sales-api/application/utils"
 )
 
 func CreateHttpServer(addr string) {
 	r := SetRoutes()
+	l := utils.NewLogger()
 
 	srv := &http.Server{
 		Handler:      r,
@@ -16,6 +19,6 @@ func CreateHttpServer(addr string) {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	log.Printf("[HTTPServer] - Server is ready to accept connections at %v.", addr)
-	log.Fatal(srv.ListenAndServe())
+	l.Info(fmt.Sprintf("[HTTPServer] - Server is ready to accept connections at %v.", addr))
+	l.Fatal(srv.ListenAndServe())
 }

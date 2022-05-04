@@ -1,11 +1,12 @@
 package http
 
 import (
-	"github.com/fatih/color"
+	"fmt"
+
 	"github.com/gorilla/mux"
 	"github.com/rellyson/car-sales-api/application/controllers"
+	"github.com/rellyson/car-sales-api/application/utils"
 	"github.com/rellyson/car-sales-api/infra/http/middlewares"
-	"github.com/rellyson/car-sales-api/infra/utils"
 )
 
 var (
@@ -26,17 +27,17 @@ func SetRoutes() *mux.Router {
 }
 
 func mapRoutes(r *mux.Router) {
-	colorizedLog := utils.NewColorizedLogger(color.FgGreen)
+	logger := utils.NewLogger()
 
 	err := r.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
 		pathTemplate, _ := route.GetPathTemplate()
 		methods, _ := route.GetMethods()
 
-		colorizedLog.Printf("[RouteMapper] - Route %v %v mapped. \n", methods, pathTemplate)
+		logger.Info(fmt.Sprintf("[RouteMapper] - Route %v %v mapped.", methods, pathTemplate))
 		return nil
 	})
 
 	if err != nil {
-		colorizedLog.Add(color.FgRed).Println(err)
+		logger.Error(err.Error())
 	}
 }
