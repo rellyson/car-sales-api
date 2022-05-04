@@ -1,0 +1,10 @@
+services:
+  cs_postgres:
+    container_name: cs_postgres
+    image: postgres:12-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=custompassword
+      - POSTGRES_USER=cs_admin
+      - POSTGRES_DB=car_sales_db
