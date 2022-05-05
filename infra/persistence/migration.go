@@ -29,5 +29,5 @@ func ExecMigrations(db *sql.DB, tableName string) {
 		logger.Fatal(err.Error())
 	}
 
-	logger.Info("[Persistence] Database migrations syncronized succesfully!")
+	logger.Info("[Persistence] - Database migrations syncronized succesfully!")
 }
