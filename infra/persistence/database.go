@@ -49,11 +49,3 @@ func GetDBConnection() (*sql.DB, error) {
 
 	return db, nil
 }
-
-func Ping() error {
-	if err := db.Ping(); err != nil {
-		return err
-	}
-
-	return nil
-}

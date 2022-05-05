@@ -6,7 +6,7 @@ const (
 	Hatch CarType = "HATCH"
 	Sedan CarType = "SEDAN"
 	SUV   CarType = "SUV"
-	Truck CarType = "Truck"
+	Truck CarType = "TRUCK"
 )
 
 type Car struct {

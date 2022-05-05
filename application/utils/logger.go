@@ -45,7 +45,7 @@ func (l *logger) Error(m string) {
 
 // Print given message using red text color followed by an os.Exit(1) call.
 func (l *logger) Fatal(m ...any) {
-	l.color.Add(color.FgHiRed).Println(m)
+	l.color.Add(color.FgRed).Println(m)
 	os.Exit(1)
 }
 

@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	//create and instantiate database
 	persistence.CreateDBConnection(persistence.DatabaseConfig{
 		Driver:   "postgres",
 		User:     "cs_admin",
@@ -16,5 +17,10 @@ func main() {
 		SSLMode:  "disabled",
 	})
 
+	//check and exec pending migrations
+	db, _ := persistence.GetDBConnection()
+	persistence.ExecMigrations(db, "car_sales_db")
+
+	//opens http server
 	http.CreateHttpServer(":3000")
 }
