@@ -4,16 +4,16 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/rellyson/car-sales-api/application/dtos"
 	"github.com/rellyson/car-sales-api/application/errors"
 	"github.com/rellyson/car-sales-api/application/utils"
+	"github.com/rellyson/car-sales-api/domain/dtos"
 	usecases "github.com/rellyson/car-sales-api/domain/use_cases"
 )
 
 type sellerController struct{}
 
 var (
-	createSellerUs usecases.BaseUseCase
+	createSellerUs usecases.CreateSellerUseCase
 )
 
 type SellerController interface {
@@ -23,7 +23,7 @@ type SellerController interface {
 	Update(w http.ResponseWriter, r *http.Request)
 }
 
-func NewSellerController(createUs usecases.BaseUseCase) SellerController {
+func NewSellerController(createUs usecases.CreateSellerUseCase) SellerController {
 	createSellerUs = createUs
 
 	return &sellerController{}
@@ -46,7 +46,7 @@ func (*sellerController) Create(w http.ResponseWriter, r *http.Request) {
 		errors.MapError(w, err)
 	}
 
-	res, err := createSellerUs.Handle(r.Body)
+	res, err := createSellerUs.Handle(reqBody)
 
 	if err != nil {
 		errors.MapError(w, err)

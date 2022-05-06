@@ -19,10 +19,10 @@ import (
 
 var (
 	//repositories
-	sellerRepo domainrepo.GenericRepository[entities.Seller] = repositories.NewSellerRepository(persistence.GetDBConnection())
+	sellerRepo domainrepo.GenericRepository[entities.Seller] = repositories.NewSellerRepositoryImp(persistence.GetDBConnection())
 
 	//usecases
-	createSellerUseCase usecases.BaseUseCase = usecases.NewCreateSellerUseCase(sellerRepo)
+	createSellerUseCase usecases.CreateSellerUseCase = usecases.NewCreateSellerUseCase(sellerRepo)
 
 	//controllers
 	healthCheckController controllers.HealthCheckController = controllers.NewHealthCheckController()

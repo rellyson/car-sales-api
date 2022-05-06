@@ -8,16 +8,16 @@ import (
 	"github.com/rellyson/car-sales-api/domain/repositories"
 )
 
-type sellerRepository struct{}
+type sellerRepositoryImp struct{}
 
 var db *sql.DB
 
-func NewSellerRepository(database *sql.DB) repositories.GenericRepository[entities.Seller] {
+func NewSellerRepositoryImp(database *sql.DB) repositories.GenericRepository[entities.Seller] {
 	db = database
-	return &sellerRepository{}
+	return &sellerRepositoryImp{}
 }
 
-func (*sellerRepository) GetById(id string) (entities.Seller, error) {
+func (*sellerRepositoryImp) GetById(id string) (entities.Seller, error) {
 	seller := entities.Seller{}
 	rows, err := db.Query("SELECT id, full_name, email, password, created_at, updated_at FROM sellers WHERE id = $1", id)
 
@@ -44,7 +44,7 @@ func (*sellerRepository) GetById(id string) (entities.Seller, error) {
 	return seller, nil
 }
 
-func (*sellerRepository) GetAll() ([]entities.Seller, error) {
+func (*sellerRepositoryImp) GetAll() ([]entities.Seller, error) {
 	sellers := []entities.Seller{}
 	rows, err := db.Query("SELECT id, full_name, email, created_at, updated_at FROM sellers")
 
@@ -73,7 +73,7 @@ func (*sellerRepository) GetAll() ([]entities.Seller, error) {
 	return sellers, nil
 }
 
-func (*sellerRepository) Create(s entities.Seller) (entities.Seller, error) {
+func (*sellerRepositoryImp) Create(s entities.Seller) (entities.Seller, error) {
 	seller := entities.Seller{}
 	stmt, err := db.Prepare("INSERT INTO sellers(full_name, email, password) VALUES($1, $2, $3) RETURNING id, full_name, email, created_at, updated_at")
 
@@ -96,7 +96,7 @@ func (*sellerRepository) Create(s entities.Seller) (entities.Seller, error) {
 	return seller, nil
 }
 
-func (*sellerRepository) Update(s entities.Seller) (entities.Seller, error) {
+func (*sellerRepositoryImp) Update(s entities.Seller) (entities.Seller, error) {
 	seller := entities.Seller{}
 	stmt, err := db.Prepare(`
 	UPDATE sellers SET full_name = $1, email = $2, password = $3, updated_at = NOW()

@@ -18,8 +18,7 @@ func main() {
 	})
 
 	//check and exec pending migrations
-	db, _ := persistence.GetDBConnection()
-	persistence.ExecMigrations(db, "car_sales_db")
+	persistence.ExecMigrations(persistence.GetDBConnection(), "car_sales_db")
 
 	//opens http server
 	http.CreateHttpServer(":3000")
