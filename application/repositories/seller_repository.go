@@ -21,6 +21,7 @@ func NewSellerRepositoryImp(db *sql.DB) repositories.GenericRepository[entities.
 
 func (r *sellerRepositoryImp) GetById(id string) (entities.Seller, error) {
 	seller := entities.Seller{}
+	r.db = persistence.GetDBConnection()
 	rows, err := r.db.Query("SELECT id, full_name, email, password, created_at, updated_at FROM sellers WHERE id = $1", id)
 
 	if err != nil {

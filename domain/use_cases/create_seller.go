@@ -10,16 +10,17 @@ type CreateSellerUseCase interface {
 	Handle(data *dtos.CreateSellerDTO) (any, error)
 }
 
-type createSellerUseCase struct{}
-
-var repo repositories.GenericRepository[entities.Seller]
-
-func NewCreateSellerUseCase(r repositories.GenericRepository[entities.Seller]) CreateSellerUseCase {
-	repo = r
-	return &createSellerUseCase{}
+type createSellerUseCase struct {
+	repo repositories.GenericRepository[entities.Seller]
 }
 
-func (*createSellerUseCase) Handle(data *dtos.CreateSellerDTO) (any, error) {
+func NewCreateSellerUseCase(r repositories.GenericRepository[entities.Seller]) CreateSellerUseCase {
+	return &createSellerUseCase{
+		repo: r,
+	}
+}
+
+func (us *createSellerUseCase) Handle(data *dtos.CreateSellerDTO) (any, error) {
 	seller := entities.Seller{
 		FullName: data.FullName,
 		Email:    data.Email,
@@ -31,7 +32,7 @@ func (*createSellerUseCase) Handle(data *dtos.CreateSellerDTO) (any, error) {
 		return nil, err
 	}
 
-	res, err := repo.Create(seller)
+	res, err := us.repo.Create(seller)
 
 	if err != nil {
 		return nil, err

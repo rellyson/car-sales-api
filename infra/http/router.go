@@ -26,11 +26,12 @@ var (
 	sellerRepo domainrepo.GenericRepository[entities.Seller] = repositories.NewSellerRepositoryImp(db)
 
 	//usecases
-	createSellerUseCase usecases.CreateSellerUseCase = usecases.NewCreateSellerUseCase(sellerRepo)
+	createSellerUseCase  usecases.CreateSellerUseCase  = usecases.NewCreateSellerUseCase(sellerRepo)
+	getSellerByIdUseCase usecases.GetSellerByIdUseCase = usecases.NewGetSellerByIdUseCase(sellerRepo)
 
 	//controllers
 	healthCheckController controllers.HealthCheckController = controllers.NewHealthCheckController()
-	sellerController      controllers.SellerController      = controllers.NewSellerController(createSellerUseCase)
+	sellerController      controllers.SellerController      = controllers.NewSellerController(createSellerUseCase, getSellerByIdUseCase)
 )
 
 func SetRoutes() *mux.Router {

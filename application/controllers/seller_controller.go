@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/rellyson/car-sales-api/application/errors"
 	"github.com/rellyson/car-sales-api/application/utils"
 	"github.com/rellyson/car-sales-api/domain/dtos"
 	usecases "github.com/rellyson/car-sales-api/domain/use_cases"
 )
 
-type sellerController struct{}
-
-var (
+type sellerController struct {
 	createSellerUs usecases.CreateSellerUseCase
-)
+	getSellerById  usecases.GetSellerByIdUseCase
+}
 
 type SellerController interface {
 	GetById(w http.ResponseWriter, r *http.Request)
@@ -23,21 +23,39 @@ type SellerController interface {
 	Update(w http.ResponseWriter, r *http.Request)
 }
 
-func NewSellerController(createUs usecases.CreateSellerUseCase) SellerController {
-	createSellerUs = createUs
-
-	return &sellerController{}
+func NewSellerController(createUs usecases.CreateSellerUseCase, getSellerByIdUs usecases.GetSellerByIdUseCase) SellerController {
+	return &sellerController{
+		createSellerUs: createUs,
+		getSellerById:  getSellerByIdUs,
+	}
 }
 
-func (*sellerController) GetById(w http.ResponseWriter, r *http.Request) {
+func (c *sellerController) GetById(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	id := vars["id"]
+
+	if id == "" {
+		return
+	}
+
+	res, err := c.getSellerById.Handle(id)
+
+	if err != nil {
+		errors.MapError(w, err)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(res)
 }
 
 func (*sellerController) GetAll(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 }
 
-func (*sellerController) Create(w http.ResponseWriter, r *http.Request) {
+func (c *sellerController) Create(w http.ResponseWriter, r *http.Request) {
 	dto := &dtos.CreateSellerDTO{}
 	if err := utils.ParseJSONBody(r.Body, dto); err != nil {
 		errors.MapError(w, err)
@@ -49,7 +67,7 @@ func (*sellerController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := createSellerUs.Handle(dto)
+	res, err := c.createSellerUs.Handle(dto)
 
 	if err != nil {
 		errors.MapError(w, err)
