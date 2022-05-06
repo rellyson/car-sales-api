@@ -1,6 +1,7 @@
 package http
 
 import (
+	"database/sql"
 	"fmt"
 	"reflect"
 	"runtime"
@@ -18,8 +19,11 @@ import (
 )
 
 var (
+	//db
+	db *sql.DB = persistence.GetDBConnection()
+
 	//repositories
-	sellerRepo domainrepo.GenericRepository[entities.Seller] = repositories.NewSellerRepositoryImp(persistence.GetDBConnection())
+	sellerRepo domainrepo.GenericRepository[entities.Seller] = repositories.NewSellerRepositoryImp(db)
 
 	//usecases
 	createSellerUseCase usecases.CreateSellerUseCase = usecases.NewCreateSellerUseCase(sellerRepo)

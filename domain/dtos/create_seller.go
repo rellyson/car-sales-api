@@ -5,7 +5,7 @@ import "github.com/rellyson/car-sales-api/application/utils"
 type CreateSellerDTO struct {
 	FullName string `json:"full_name" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,gt=8"`
+	Password string `json:"password" validate:"required,min=8"`
 }
 
 func (dto *CreateSellerDTO) Validate() error {

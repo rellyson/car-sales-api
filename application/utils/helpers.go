@@ -2,19 +2,17 @@ package utils
 
 import (
 	"encoding/json"
-	"errors"
-	"net/http"
+	"io"
 )
 
-func ParseJSONBody(r *http.Request, s interface{}) error {
-	if r.Body == nil {
-		return errors.New("request body is empty")
-	}
+func ParseJSONBody(r io.ReadCloser, s interface{}) error {
+	body, err := io.ReadAll(r)
 
-	err := json.NewDecoder(r.Body).Decode(&s)
 	if err != nil {
 		return err
 	}
+
+	json.Unmarshal([]byte(body), s)
 
 	return nil
 }

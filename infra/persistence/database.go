@@ -27,13 +27,12 @@ func CreateDBConnection(c DatabaseConfig) {
 	connStr := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable", c.Host, c.Port, c.User, c.Password, c.DbName)
 
-	dbConn, err := sql.Open(c.Driver, connStr)
+	var err error
+	db, err = sql.Open(c.Driver, connStr)
 
 	if err != nil {
 		logger.Error(fmt.Sprintf("there was an error openning database: %s", err.Error()))
 	}
-
-	db = dbConn
 
 	//pings database to check connectivity
 	if err = db.Ping(); err != nil {

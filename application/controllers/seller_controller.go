@@ -38,18 +38,22 @@ func (*sellerController) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (*sellerController) Create(w http.ResponseWriter, r *http.Request) {
-	reqBody := dtos.CreateSellerDTO{}
-	utils.ParseJSONBody(r, reqBody)
-	err := reqBody.Validate()
-
-	if err != nil {
+	dto := &dtos.CreateSellerDTO{}
+	if err := utils.ParseJSONBody(r.Body, dto); err != nil {
 		errors.MapError(w, err)
+		return
 	}
 
-	res, err := createSellerUs.Handle(reqBody)
+	if err := dto.Validate(); err != nil {
+		errors.MapError(w, err)
+		return
+	}
+
+	res, err := createSellerUs.Handle(dto)
 
 	if err != nil {
 		errors.MapError(w, err)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")

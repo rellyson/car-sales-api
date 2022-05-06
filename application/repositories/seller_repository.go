@@ -6,20 +6,22 @@ import (
 
 	"github.com/rellyson/car-sales-api/domain/entities"
 	"github.com/rellyson/car-sales-api/domain/repositories"
+	"github.com/rellyson/car-sales-api/infra/persistence"
 )
 
-type sellerRepositoryImp struct{}
-
-var db *sql.DB
-
-func NewSellerRepositoryImp(database *sql.DB) repositories.GenericRepository[entities.Seller] {
-	db = database
-	return &sellerRepositoryImp{}
+type sellerRepositoryImp struct {
+	db *sql.DB
 }
 
-func (*sellerRepositoryImp) GetById(id string) (entities.Seller, error) {
+func NewSellerRepositoryImp(db *sql.DB) repositories.GenericRepository[entities.Seller] {
+	return &sellerRepositoryImp{
+		db: db,
+	}
+}
+
+func (r *sellerRepositoryImp) GetById(id string) (entities.Seller, error) {
 	seller := entities.Seller{}
-	rows, err := db.Query("SELECT id, full_name, email, password, created_at, updated_at FROM sellers WHERE id = $1", id)
+	rows, err := r.db.Query("SELECT id, full_name, email, password, created_at, updated_at FROM sellers WHERE id = $1", id)
 
 	if err != nil {
 		return seller, errors.New(err.Error())
@@ -28,12 +30,12 @@ func (*sellerRepositoryImp) GetById(id string) (entities.Seller, error) {
 
 	for rows.Next() {
 		rows.Scan(
-			seller.ID,
-			seller.FullName,
-			seller.Email,
-			seller.Password,
-			seller.CreatedAt,
-			seller.UpdatedAt,
+			&seller.ID,
+			&seller.FullName,
+			&seller.Email,
+			&seller.Password,
+			&seller.CreatedAt,
+			&seller.UpdatedAt,
 		)
 	}
 
@@ -44,9 +46,9 @@ func (*sellerRepositoryImp) GetById(id string) (entities.Seller, error) {
 	return seller, nil
 }
 
-func (*sellerRepositoryImp) GetAll() ([]entities.Seller, error) {
+func (r *sellerRepositoryImp) GetAll() ([]entities.Seller, error) {
 	sellers := []entities.Seller{}
-	rows, err := db.Query("SELECT id, full_name, email, created_at, updated_at FROM sellers")
+	rows, err := r.db.Query("SELECT id, full_name, email, created_at, updated_at FROM sellers")
 
 	if err != nil {
 		return sellers, errors.New(err.Error())
@@ -56,11 +58,11 @@ func (*sellerRepositoryImp) GetAll() ([]entities.Seller, error) {
 	for rows.Next() {
 		rowSeller := entities.Seller{}
 		rows.Scan(
-			rowSeller.ID,
-			rowSeller.FullName,
-			rowSeller.Email,
-			rowSeller.CreatedAt,
-			rowSeller.UpdatedAt,
+			&rowSeller.ID,
+			&rowSeller.FullName,
+			&rowSeller.Email,
+			&rowSeller.CreatedAt,
+			&rowSeller.UpdatedAt,
 		)
 
 		sellers = append(sellers, rowSeller)
@@ -73,20 +75,21 @@ func (*sellerRepositoryImp) GetAll() ([]entities.Seller, error) {
 	return sellers, nil
 }
 
-func (*sellerRepositoryImp) Create(s entities.Seller) (entities.Seller, error) {
+func (r *sellerRepositoryImp) Create(s entities.Seller) (entities.Seller, error) {
 	seller := entities.Seller{}
-	stmt, err := db.Prepare("INSERT INTO sellers(full_name, email, password) VALUES($1, $2, $3) RETURNING id, full_name, email, created_at, updated_at")
+	r.db = persistence.GetDBConnection()
+	stmt, err := r.db.Prepare("INSERT INTO sellers(full_name, email, password) VALUES($1, $2, $3) RETURNING id, full_name, email, created_at, updated_at")
 
 	if err != nil {
 		return seller, errors.New(err.Error())
 	}
 
 	err = stmt.QueryRow(s.FullName, s.Email, s.Password).Scan(
-		seller.ID,
-		seller.FullName,
-		seller.Email,
-		seller.CreatedAt,
-		seller.UpdatedAt,
+		&seller.ID,
+		&seller.FullName,
+		&seller.Email,
+		&seller.CreatedAt,
+		&seller.UpdatedAt,
 	)
 
 	if err != nil {
@@ -96,9 +99,9 @@ func (*sellerRepositoryImp) Create(s entities.Seller) (entities.Seller, error) {
 	return seller, nil
 }
 
-func (*sellerRepositoryImp) Update(s entities.Seller) (entities.Seller, error) {
+func (r *sellerRepositoryImp) Update(s entities.Seller) (entities.Seller, error) {
 	seller := entities.Seller{}
-	stmt, err := db.Prepare(`
+	stmt, err := r.db.Prepare(`
 	UPDATE sellers SET full_name = $1, email = $2, password = $3, updated_at = NOW()
 	WHERE id = $1
 	RETURNING id, full_name, email, created_at, updated_at
@@ -109,11 +112,11 @@ func (*sellerRepositoryImp) Update(s entities.Seller) (entities.Seller, error) {
 	}
 
 	err = stmt.QueryRow(s.FullName, s.Email, s.Password).Scan(
-		seller.ID,
-		seller.FullName,
-		seller.Email,
-		seller.CreatedAt,
-		seller.UpdatedAt,
+		&seller.ID,
+		&seller.FullName,
+		&seller.Email,
+		&seller.CreatedAt,
+		&seller.UpdatedAt,
 	)
 
 	if err != nil {

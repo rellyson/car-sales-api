@@ -7,7 +7,7 @@ import (
 )
 
 type CreateSellerUseCase interface {
-	Handle(data dtos.CreateSellerDTO) (any, error)
+	Handle(data *dtos.CreateSellerDTO) (any, error)
 }
 
 type createSellerUseCase struct{}
@@ -19,7 +19,7 @@ func NewCreateSellerUseCase(r repositories.GenericRepository[entities.Seller]) C
 	return &createSellerUseCase{}
 }
 
-func (*createSellerUseCase) Handle(data dtos.CreateSellerDTO) (any, error) {
+func (*createSellerUseCase) Handle(data *dtos.CreateSellerDTO) (any, error) {
 	seller := entities.Seller{
 		FullName: data.FullName,
 		Email:    data.Email,
