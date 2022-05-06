@@ -8,13 +8,25 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rellyson/car-sales-api/application/controllers"
+	"github.com/rellyson/car-sales-api/application/repositories"
 	"github.com/rellyson/car-sales-api/application/utils"
+	"github.com/rellyson/car-sales-api/domain/entities"
+	domainrepo "github.com/rellyson/car-sales-api/domain/repositories"
+	usecases "github.com/rellyson/car-sales-api/domain/use_cases"
 	"github.com/rellyson/car-sales-api/infra/http/middlewares"
+	"github.com/rellyson/car-sales-api/infra/persistence"
 )
 
 var (
+	//repositories
+	sellerRepo domainrepo.GenericRepository[entities.Seller] = repositories.NewSellerRepository(persistence.GetDBConnection())
+
+	//usecases
+	createSellerUseCase usecases.BaseUseCase = usecases.NewCreateSellerUseCase(sellerRepo)
+
+	//controllers
 	healthCheckController controllers.HealthCheckController = controllers.NewHealthCheckController()
-	sellerController      controllers.SellerController      = controllers.NewSellerController()
+	sellerController      controllers.SellerController      = controllers.NewSellerController(createSellerUseCase)
 )
 
 func SetRoutes() *mux.Router {

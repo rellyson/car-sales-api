@@ -7,8 +7,8 @@ type Entity interface {
 }
 
 type GenericRepository[T Entity] interface {
-	GetById(id string) T
-	GetAll() []T
-	Create(T) T
-	Update(T) T
+	GetById(id string) (T, error)
+	GetAll() ([]T, error)
+	Create(T) (T, error)
+	Update(T) (T, error)
 }

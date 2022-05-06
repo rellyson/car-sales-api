@@ -1,8 +1,20 @@
 package controllers
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/rellyson/car-sales-api/application/dtos"
+	"github.com/rellyson/car-sales-api/application/errors"
+	"github.com/rellyson/car-sales-api/application/utils"
+	usecases "github.com/rellyson/car-sales-api/domain/use_cases"
+)
 
 type sellerController struct{}
+
+var (
+	createSellerUs usecases.BaseUseCase
+)
 
 type SellerController interface {
 	GetById(w http.ResponseWriter, r *http.Request)
@@ -11,7 +23,9 @@ type SellerController interface {
 	Update(w http.ResponseWriter, r *http.Request)
 }
 
-func NewSellerController() SellerController {
+func NewSellerController(createUs usecases.BaseUseCase) SellerController {
+	createSellerUs = createUs
+
 	return &sellerController{}
 }
 
@@ -24,7 +38,23 @@ func (*sellerController) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (*sellerController) Create(w http.ResponseWriter, r *http.Request) {
+	reqBody := dtos.CreateSellerDTO{}
+	utils.ParseJSONBody(r, reqBody)
+	err := reqBody.Validate()
+
+	if err != nil {
+		errors.MapError(w, err)
+	}
+
+	res, err := createSellerUs.Handle(r.Body)
+
+	if err != nil {
+		errors.MapError(w, err)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(res)
 }
 
 func (*sellerController) Update(w http.ResponseWriter, r *http.Request) {

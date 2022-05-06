@@ -2,7 +2,6 @@ package persistence
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 
 	_ "github.com/lib/pq"
@@ -42,10 +41,6 @@ func CreateDBConnection(c DatabaseConfig) {
 	}
 }
 
-func GetDBConnection() (*sql.DB, error) {
-	if db == nil {
-		return nil, errors.New("db is not initialized")
-	}
-
-	return db, nil
+func GetDBConnection() *sql.DB {
+	return db
 }
